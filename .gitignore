@@ -1,2 +1,3 @@
 news.db
-__pycache__/db.cpython-313.pyc
+.env
+__pycache__

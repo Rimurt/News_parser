@@ -158,23 +158,17 @@ def get_news_content(news_url):
     print(f"✅ Добавлена новость в базу данных c id: {news['id']}")
 
 
-
 # Основная логика
-if __name__ == "__main__":
+def parsing():
     print("📡 Получаем ссылки с главной страницы...")
     news_links = get_links()
 
     if not news_links:
-        print("❌ Не удалось получить ссылки. Возможно, сайт изменил структуру.")
-        exit()
+        return "error"
 
-    
-    for link in news_links:  # ограничим 10 новостями
+    for link in news_links:
         print(f"\n📰 Парсим: {link}")
         time.sleep(random.uniform(4, 8))  # пауза между запросами
         get_news_content(link)
+    return "ok"
     
-    # all_news = session.query(News).all()
-    # print("Новости в базе данных")
-    # for rows in all_news:
-    #     print(f"{rows}")
