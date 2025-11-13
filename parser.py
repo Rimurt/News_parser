@@ -103,17 +103,17 @@ def extract_id(url: str) -> str | None:
     match = re.search(r"/(?:news|review|article)/(\d+)/", url)
     return match.group(1) if match else None
 
-def get_news_content(news_url):
+def get_news_content(news_url) -> bool:
 
     # Проверяем, существует ли новость с таким ID в базе данных, чтобы избежать дублирования.
     if session.get(News,extract_id(news_url)):
         print("Новость уже есть в базе данных")
-        return
+        return False
     
     """Получаем заголовок новости."""
     response = safe_get(news_url)
     if not response:
-        return None
+        return False
 
     soup = BeautifulSoup(response.text, "lxml")
     news = {
@@ -156,19 +156,23 @@ def get_news_content(news_url):
     session.add(data)
     session.commit()
     print(f"✅ Добавлена новость в базу данных c id: {news['id']}")
+    return True
 
 
 # Основная логика
-def parsing():
+def parsing() -> int | str:
     print("📡 Получаем ссылки с главной страницы...")
     news_links = get_links()
 
     if not news_links:
         return "error"
 
+    added_count = 0
     for link in news_links:
         print(f"\n📰 Парсим: {link}")
         time.sleep(random.uniform(4, 8))  # пауза между запросами
-        get_news_content(link)
-    return "ok"
+        if get_news_content(link):
+            added_count += 1
+            
+    return added_count
     
